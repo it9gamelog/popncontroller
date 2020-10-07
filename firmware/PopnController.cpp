@@ -8,29 +8,16 @@
 static const uint8_t _hidReportDescriptor[] PROGMEM = {
   // Buttons Input
   0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
-  0x09, 0x06,        // Usage (Keyboard)
+  0x09, 0x04,        // Usage (Joystick)
   0xA1, 0x01,        // Collection (Application)
   0x85, 0x01,        //   Report ID (1)
-  0x05, 0x07,        //   Usage Page (Kbrd/Keypad)
+  0x05, 0x09,        //   Usage Page (Buttons)
 
   // Total: 2 bytes
   // Buttons 0-8 (1 bit each)
-  //   This defines the keys mapping for each button.
-  //   Seems the most commonly used config
-  0x09, 0x06,        //   Usage (0x06) C
-  0x09, 0x09,        //   Usage (0x09) F
-  0x09, 0x19,        //   Usage (0x19) V
-  0x09, 0x0A,        //   Usage (0x0A) G
-  0x09, 0x05,        //   Usage (0x05) B
-  0x09, 0x0B,        //   Usage (0x0B) H
-  0x09, 0x11,        //   Usage (0x11) N
-  0x09, 0x0D,        //   Usage (0x0D) J
-  0x09, 0x10,        //   Usage (0x10) M
-  // Aux 0-2 (1 bit each)
-  //   Not much thought on key mapping
-  0x09, 0x14,        //   Usage (0x14) Q
-  0x09, 0x1A,        //   Usage (0x1A) W
-  0x09, 0x08,        //   Usage (0x08) E
+  // Aux 0-2 (1 bit each)  
+  0x19, 0x01,        //   USAGE_MINIMUM (Button 1)
+  0x29, 0x0C,        //   USAGE_MAXIMUM (Button 12)
   0x15, 0x00,        //   Logical Minimum (0)
   0x25, 0x01,        //   Logical Maximum (1)
   0x75, 0x01,        //   Report Size (1)
