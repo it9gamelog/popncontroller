@@ -1,4 +1,4 @@
-Pop'n Arcade Controller
+# Pop'n Arcade Controller
 
 Please see the video for the making of and some explaination:
 https://github.com/it9gamelog/it9gamelog/wiki/Pop'n-Controller
@@ -7,11 +7,11 @@ https://github.com/it9gamelog/it9gamelog/wiki/Pop'n-Controller
 
 MIT License
 
-# Software
+# Software Requirements
 
-* firmware: Arduino + Arduino Micro
-* pcb: KiCad
-* mechanical: Solidworks
+* Firmware: Arduino 1.8.13 + Arduino Micro
+* PCB: KiCad
+* Mechanical: Solidworks
 
 # Known Bugs
 

@@ -16,7 +16,11 @@
 #define CS_Timeout (8192)
 
 CapacitiveSensor::CapacitiveSensor(uint8_t sendPin, uint8_t receivePin)
-{
+{  
+  pinMode(sendPin, OUTPUT);   // sendpin to OUTPUT
+  pinMode(receivePin, INPUT); // receivePin to INPUT
+  digitalWrite(sendPin, LOW);
+  
   sBit = PIN_TO_BITMASK(sendPin); // get send pin's ports and bitmask
   sReg = PIN_TO_BASEREG(sendPin);
 
@@ -43,17 +47,17 @@ int CapacitiveSensor::sense(uint8_t samples)
 
   // loop for samples parameter - simple lowpass filter
   for (uint8_t i = 0; i < samples; i++) {
-    if (senseOnce() < 0) return -2; // variable over timeout
+    if (!senseOnce()) return -2; // variable over timeout
   }
 
   // Baseline calibration
   // total is linearly related to the time required to charge the capacitance
-  if (total < baseline - samples * 2)
+  if (total < baseline - (int)samples * 2)
   {
     // The capacitance is much lower than what have known.
     // Reset immediately
     baseline = total;
-  } else if (total < baseline + samples * 2)
+  } else if (total < baseline + (int)samples * 2)
   {
     // If the touch is considered not touched...
     if (millis() - lastCalibration > 25)
@@ -67,20 +71,21 @@ int CapacitiveSensor::sense(uint8_t samples)
 }
 
 bool CapacitiveSensor::senseOnce(void)
-{
+{  
+  // Backup global interrupt state 
+  auto oldSREG = SREG;
+  
   // sendPin High
   DIRECT_WRITE_HIGH(sReg, sBit);
+  
   // Disable interrupt for timing.
-  // This function will finish in 10 microseconds or so.
+  // This function will finish in 10 microseconds or so.  
   noInterrupts();
 
-  // Keep counting when Low is still detected
+  // Keep counting when Low is still being detected
   while (!DIRECT_READ(rReg, rBit) && (total < CS_Timeout)) { 
-    // is positive value
     total++;
   }
-
-  if (total > CS_Timeout) return false;
 
   // Now charge the pin to HIGH fully and count again
   // receivePin to High
@@ -89,12 +94,15 @@ bool CapacitiveSensor::senseOnce(void)
   delayMicroseconds(5);
   // receivePin to INPUT (pullup is off)
   DIRECT_MODE_INPUT(rReg, rBit); 
-  DIRECT_WRITE_LOW(sReg, sBit);  // sendPin LOW
+  // sendPin LOW
+  DIRECT_WRITE_LOW(sReg, sBit);
 
-  while (DIRECT_READ(rReg, rBit) && (total < CS_Timeout)) { // while receive pin is HIGH  AND total
-    // is less than timeout
+  // Keep counting when High is still being detected
+  while (DIRECT_READ(rReg, rBit) && (total < CS_Timeout)) { 
     total++;
   }
-  interrupts();
+  
+  // Restore interrupt
+  SREG = oldSREG;
   return total < CS_Timeout;
 }
